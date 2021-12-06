@@ -2,57 +2,48 @@
 
 int main()
 {
-  //Assign the window variable
-  const int windowWidth{512};
-  const int windowHeight{380};
+  // Game Variables
+  const int windowHeight = 312;
+  const int windowWidth = 400;
 
-  //Rectangle Dimensions
-  const int width{50};
-  const int height{49};
-  int posY{windowHeight - height};
-  const int posX{300};
-  //Velocity // Gravity // Acceleration
-  int velocity{0};
-  const int jumpValue{-10};
-  bool isInAir{false};
-  //Acceleration due to gravity
-  const int gravity{1};
-  //Create the window
+  //Create a Window
   InitWindow(windowWidth,windowHeight,"Dasher");
 
-  //Setting the game FPS
-  SetTargetFPS(60);
+
+  //Character Properties---------------------------------------------------------
+  Texture2D scarfy = LoadTexture("textures/scarfy.png");
+
+  Rectangle scarfyRec;
+  scarfyRec.width = scarfy.width / 6;
+  scarfyRec.height = scarfy.height;
+
+  Vector2 scarfyPos;
+  scarfyPos.x = windowWidth / 2 - scarfyRec.width / 2;
+  scarfyPos.y = windowHeight - scarfyRec.height;
+  //Character Properties---------------------------------------------------------
+
+
+  //World Properity--------------------------------------------------------------
+  int velocity{0};
+  const int jumpValue{10};
+  //World Properity--------------------------------------------------------------
+
   while(!WindowShouldClose()) {
-    // ...
     BeginDrawing();
-    // Clearing the white background
+
     ClearBackground(WHITE);
-   
-    //Drawing the rectangle
-    DrawRectangle(windowWidth/2 , posY, width, height, BLUE);
     
+    scarfyPos.y += velocity;
 
-    //Ground Height
-    if(posY >= windowHeight - height) {
-      velocity = 0;
-      isInAir = false;
-    } else {
-      //updating gravity
-      velocity += gravity;
-      isInAir = true;
+    //Add Velocity on SPACE pressed
+    if(IsKeyPressed(KEY_SPACE)) {
+       velocity -= jumpValue;
     }
 
-   
-      //Make the Ke
-    if(IsKeyPressed(KEY_SPACE) && !isInAir) {
-      velocity += jumpValue;
-    }
+    //Draw the character on the screen
+    DrawTextureRec(scarfy, scarfyRec, scarfyPos, WHITE);
 
-   //Updating the velocity for every frame per sec
-    posY += velocity;
-    //End the Canvas Frame Draw
     EndDrawing();
   }
-  //This is a raylib function that closes the window correctly;
   CloseWindow();
-}
+} 
