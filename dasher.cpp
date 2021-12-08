@@ -12,11 +12,12 @@ struct AnimData
 int main()
 {
   // Game Variables
-  const int windowHeight = 312;
-  const int windowWidth = 700;
+  int windowDimension[2];
+  windowDimension[0] = 612;
+  windowDimension[1] = 312;
 
   //Create a Window
-  InitWindow(windowWidth,windowHeight,"Dasher");
+  InitWindow(windowDimension[0],windowDimension[1],"Dasher");
 
 
   //Character Properties---------------------------------------------------------
@@ -27,8 +28,8 @@ int main()
   scarfyData.rec.height = scarfy.height;
   scarfyData.rec.x = 0;
   scarfyData.rec.y = 0;
-  scarfyData.pos.x = windowWidth / 2 - scarfyData.rec.width / 2;
-  scarfyData.pos.y = windowHeight - scarfyData.rec.height;
+  scarfyData.pos.x = windowDimension[0] / 2 - scarfyData.rec.width / 2;
+  scarfyData.pos.y = windowDimension[1] - scarfyData.rec.height;
   scarfyData.frame = 0;
   scarfyData.runningTime = 0.0;
   scarfyData.updateTime = 1.0 / 12.0;
@@ -47,30 +48,29 @@ int main()
   // ... // ... // ...
   AnimData  nebulaData;
   AnimData  nebula2Data;
-  // ... // ... // ...
-  nebulaData.rec.width = nebula.width / 8;
-  nebulaData.rec.height = nebula.height / 8;
-  nebulaData.rec.x = 0;
-  nebulaData.rec.y = 0;
-  nebulaData.pos.x = windowWidth - nebulaData.rec.width;
-  nebulaData.pos.y = windowHeight - nebulaData.rec.height;
-  nebulaData.frame = 0;
-  nebulaData.updateTime = 1.0 / 12.0;
-  nebulaData.runningTime = 0.0;
 
-  nebula2Data.rec.width = nebula.width / 8;
-  nebula2Data.rec.height = nebula.height / 8;
-  nebula2Data.rec.x = 0;
-  nebula2Data.rec.y = 0;
-  nebula2Data.pos.x = windowWidth + 400;
-  nebula2Data.pos.y = windowHeight - nebula2Data.rec.height;
-  nebula2Data.frame = 0;
-  nebula2Data.updateTime = 1.0 / 16.0;
-  nebula2Data.runningTime = 0.0;
+  const int length = 20;
+
+  AnimData nebulea[length]{};
+
+  for (int i = 0; i < length; i++) {
+    // ... // ... // ...
+    nebulea[i].rec.width = nebula.width / 8;
+    nebulea[i].rec.height = nebula.height / 8;
+    nebulea[i].rec.x = 0;
+    nebulea[i].rec.y = 0;
+    nebulea[i].pos.y = windowDimension[1] - nebulea[i].rec.height;
+    nebulea[i].frame = 0;
+    nebulea[i].updateTime = 1.0 / 12.0;
+    nebulea[i].runningTime = 0.0;
+  }
+  for (int i = 0; i < length; i++) {
+    nebulea[i].pos.x = windowDimension[0] - nebulea[i].rec.width + i * 900;
+  }
   //Nebula Properties------------------------------------------------------------
 
   //Nebula animation data
-  int NebulaVelocity{-600};
+  int NebulaVelocity{-300};
 
   SetTargetFPS(60);
 
@@ -83,7 +83,7 @@ int main()
 
     ClearBackground(BLACK);
     
-    if(scarfyData.pos.y >= windowHeight - scarfyData.rec.height) {
+    if(scarfyData.pos.y >= windowDimension[1] - scarfyData.rec.height) {
       velocity = 0;
       isInAir = false;
     } else {
@@ -101,8 +101,9 @@ int main()
     }
 
     //upadting nebula velocity to move to the left
-    nebulaData.pos.x += NebulaVelocity * dT;
-    nebula2Data.pos.x += NebulaVelocity * dT;
+    for (int i = 0; i < length; i++) {
+      nebulea[i].pos.x += NebulaVelocity * dT;
+    }
     //Updating the velocity
     scarfyData.pos.y += velocity * dT;
 
@@ -121,36 +122,26 @@ int main()
 
     }
 
-  
-    //Nebula ONE
-    nebulaData.runningTime += dT;
-    if(nebulaData.runningTime > nebulaData.updateTime) {
-      nebulaData.runningTime = 0.0;
-      //updating the frame
-      nebulaData.rec.x = nebulaData.frame * nebulaData.rec.width;
-      nebulaData.frame++;
-      if(nebulaData.frame > 7) {
-        nebulaData.frame = 0;
-      }
-    }
-
-    //Nebula TWO
-    nebula2Data.runningTime += dT;
-    if(nebula2Data.runningTime > nebula2Data.updateTime) {
-      nebula2Data.runningTime = 0.0;
-      //updating the frame
-      nebula2Data.rec.x = nebula2Data.frame * nebula2Data.rec.width;
-      nebula2Data.frame++;
-      if(nebula2Data.frame > 7) {
-        nebula2Data.frame = 0;
+    for (int i = 0; i < length; i++) {
+      //Nebula TWO
+      nebulea[i].runningTime += dT;
+      if(nebulea[i].runningTime > nebulea[i].updateTime) {
+        nebulea[i].runningTime = 0.0;
+        //updating the frame
+        nebulea[i].rec.x = nebulea[i].frame * nebulea[i].rec.width;
+        nebulea[i].frame++;
+        if(nebulea[i].frame > 7) {
+          nebulea[i].frame = 0;
+        }
       }
     }
      
 
     //Draw the character on the screen
     DrawTextureRec(scarfy, scarfyData.rec, scarfyData.pos,WHITE);
-    DrawTextureRec(nebula, nebulaData.rec, nebulaData.pos, WHITE);
-    DrawTextureRec(nebula, nebula2Data.rec, nebula2Data.pos,RED);
+    for (int i = 0; i < length; i++) {
+      DrawTextureRec(nebula, nebulea[i].rec, nebulea[i].pos, WHITE);
+    }
 
     EndDrawing();
   }
