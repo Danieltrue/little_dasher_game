@@ -49,7 +49,7 @@ int main()
   AnimData  nebulaData;
   AnimData  nebula2Data;
 
-  const int length = 20;
+  const int length = 3;
 
   AnimData nebulea[length]{};
 
@@ -67,7 +67,11 @@ int main()
   for (int i = 0; i < length; i++) {
     nebulea[i].pos.x = windowDimension[0] - nebulea[i].rec.width + i * 900;
   }
+
+  float finishLine{nebulea[length - 1].pos.x};
   //Nebula Properties------------------------------------------------------------
+  bool collision{};
+
 
   //Nebula animation data
   int NebulaVelocity{-300};
@@ -130,7 +134,6 @@ int main()
     }
 
     //creating a Delta Time that capture the FPS and use it to give players more frame in the game
-    
 
     //Add Velocity on SPACE pressed
     if(IsKeyPressed(KEY_SPACE) && !isInAir) {
@@ -141,6 +144,9 @@ int main()
     for (int i = 0; i < length; i++) {
       nebulea[i].pos.x += NebulaVelocity * dT;
     }
+    // update the finish line
+
+    finishLine = NebulaVelocity * dT;
     //Updating the velocity
     scarfyData.pos.y += velocity * dT;
 
@@ -172,13 +178,37 @@ int main()
         }
       }
     }
-     
+    for (AnimData nebula: nebulea) {
+    float pad{20};
+    Rectangle nebRec {
+      nebula.pos.x + pad,
+      nebula.pos.y + pad,
+      nebula.rec.width - 2*pad,
+      nebula.rec.height - 2*pad
+    };
+
+    Rectangle scarfyRec {
+      scarfyData.pos.y,
+      scarfyData.pos.x,
+      scarfyData.rec.width,
+      scarfyData.rec.height
+    };
+
+    if (CheckCollisionRecs(nebRec, scarfyRec)) {
+      collision = true;
+    }
+  }
 
     //Draw the character on the screen
-    DrawTextureRec(scarfy, scarfyData.rec, scarfyData.pos,WHITE);
-    for (int i = 0; i < length; i++) {
-      DrawTextureRec(nebula, nebulea[i].rec, nebulea[i].pos, WHITE);
+    if(collision) {
+      DrawText("GAME OVER", windowDimension[0] / 2 - 50, windowDimension[1] / 2 - 50, 20, WHITE);
+    } else {
+      DrawTextureRec(scarfy, scarfyData.rec, scarfyData.pos,WHITE);
+      for (int i = 0; i < length; i++) {
+        DrawTextureRec(nebula, nebulea[i].rec, nebulea[i].pos, WHITE);
+      }
     }
+    
 
     EndDrawing();
   }
