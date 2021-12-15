@@ -200,16 +200,12 @@ int main()
   }
 
     //Draw the character on the screen
-    if(collision) {
-      DrawText("GAME OVER", windowDimension[0] / 2 - 50, windowDimension[1] / 2 - 50, 20, WHITE);
-    } else {
+  
       DrawTextureRec(scarfy, scarfyData.rec, scarfyData.pos,WHITE);
       for (int i = 0; i < length; i++) {
         DrawTextureRec(nebula, nebulea[i].rec, nebulea[i].pos, WHITE);
       }
-    }
-    
-
+  
     EndDrawing();
   }
   UnloadTexture(scarfy);
